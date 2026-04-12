@@ -9,14 +9,13 @@ class Batch extends Model
 {
     protected $fillable = [
         'product_name',
+        'product_code',
         'batch_number',
-        'production_date',
-        'status',
+        'date_created',
     ];
 
     protected $casts = [
-        'production_date' => 'date',
-        'status' => 'string',
+        'date_created' => 'date',
     ];
 
     public function testData(): HasMany

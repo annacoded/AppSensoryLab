@@ -7,14 +7,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class TestData extends Model
 {
+    protected $table = 'test_data';
+
     protected $fillable = [
         'batch_id',
         'parameter_name',
         'value',
-    ];
-
-    protected $casts = [
-        'value' => 'float',
+        'measurement_unit',
     ];
 
     public function batch(): BelongsTo
