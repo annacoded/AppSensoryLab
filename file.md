@@ -48,3 +48,48 @@ Dirancang dengan **Blade Template Engine** dan distyling dengan standar *UI Libr
   - Inputan *Batch/Product Info*.
   - Inputan *Data Hasil Uji* (dengan limitasi Field Value memicu constraint `<input type="number" step="any">`).
 - Value lama (`old('param')`) tetap dirender jika proses form submit gagal yang ditangani otomatis oleh Laravel Session (*Best Practice UX*).
+
+---
+
+## 4. User Story Format (journey2_qc_input_output.md)
+
+**Prompt:** "Generate Laravel MVC code for QC instrument data input"
+
+**Context File:** `app/Http/Controllers/QCController.php`
+
+**Skills:** `skills.md`
+
+**Task:** Generate code for the following user story:
+```
+"As a QC staff, I want to input numeric test data
+ so that the measurement results are recorded"
+```
+
+**Input:**
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `product_name` | string | Nama produk yang diuji |
+| `product_code` | string | Kode produk (unik) |
+| `batch_number` | string | Nomor batch (unik) |
+| `date_created` | date | Tanggal pembuatan batch |
+| `parameter_name` | string | Nama parameter pengujian |
+| `value` | float | Nilai numerik hasil pengujian |
+| `measurement_unit` | string | Satuan pengukuran (nullable) |
+
+**Output:**
+```
+@return RedirectResponse
+//@return Boolean true -> data tersimpan ke DB
+```
+
+**Rules:**
+```php
+// value          -> required | numeric
+// product_code   -> required | unique:batches
+// batch_number   -> required | unique:batches
+// Gunakan DB::transaction() untuk atomisitas
+```
+
+**What Changed:** "Added QC data input with DB transaction"
+
+**Commit Message:** `feat(qc): implement QC data input with validation`
