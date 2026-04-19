@@ -19,7 +19,7 @@
 ```
 
 Keterangan:
-- `Batch` memiliki banyak `TestData`.
+- Relasi One-to-Many: `Batch` memiliki banyak `TestData`.
 - `TestData.batch_id` mengacu pada `Batch.id`.
 - Relasi ini menggunakan aturan `ON DELETE CASCADE`, sehingga semua data `TestData` terkait ikut terhapus ketika `Batch` dihapus.
 
