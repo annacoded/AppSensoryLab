@@ -9,6 +9,15 @@ use Illuminate\Support\Facades\DB;
 
 class QCController extends Controller
 {
+    public function index()
+    {
+    // Ambil semua batch dengan jumlah test data
+    $batches = Batch::withCount('testData')->get();
+
+    // Kirim ke view qc.index
+    return view('qc.index', compact('batches'));
+    }
+
     /**
      * Menampilkan form input data QC.
      */
@@ -60,7 +69,7 @@ class QCController extends Controller
                 'measurement_unit' => $validated['measurement_unit'],
             ]);
 
-            DB::commit();
+           DB::commit();
 
             return redirect()->route('qc.create')->with('success', 'Data hasil pengujian QC berhasil disimpan.');
 

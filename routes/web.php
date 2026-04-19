@@ -1,15 +1,17 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
 use App\Http\Controllers\QCController;
 
 Route::get('/', function () {
     return view('welcome');
 });
 
-// Route for QC Input Data
-Route::get('/qc',         [QCController::class, 'index'])->name('qc.index');
-Route::get('/qc/create',  [QCController::class, 'create'])->name('qc.create');
-Route::post('/qc/store',  [QCController::class, 'store'])->name('qc.store');
+// Grouping biar rapi
+Route::prefix('qc')->name('qc.')->group(function () {
+    Route::get('/', [QCController::class, 'index'])->name('index');
+    Route::get('/create', [QCController::class, 'create'])->name('create');
+    Route::post('/store', [QCController::class, 'store'])->name('store');
+    Route::get('/', [QCController::class, 'index'])->name('qc.index');
 
+});
