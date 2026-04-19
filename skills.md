@@ -82,3 +82,50 @@ Your goal is to help me implement high-quality QC data input features in Laravel
 - [Eloquent ORM](https://laravel.com/docs/eloquent)
 - [Laravel Validation](https://laravel.com/docs/validation)
 - [Laravel Testing](https://laravel.com/docs/testing)
+
+## Routes (Journey 2 — QC Input)
+
+User Journey 2 menggambarkan alur kerja QC Staff dalam menginput data pengujian alat, mencakup 4 fase:
+**Persiapan Pengujian → Input Data Alat → Validasi Data → Penyimpanan Data**
+
+• `GET  /qc`        → `QCController@index`  — Dashboard QC: menampilkan daftar batch yang tersedia dan ringkasan status pengujian.
+• `GET  /qc/create` → `QCController@create` — Form Input: menampilkan formulir entri data pengujian alat untuk batch yang dipilih.
+• `POST /qc/store`  → `QCController@store`  — Proses Simpan: menerima data dari form, menjalankan validasi (via Form Request), dan menyimpan ke tabel `test_data`.
+
+Pendaftaran route di `routes/web.php`:
+
+```php
+use App\Http\Controllers\QCController;
+
+Route::middleware(['auth'])->prefix('qc')->name('qc.')->group(function () {
+    Route::get('/',        [QCController::class, 'index'])->name('index');
+    Route::get('/create',  [QCController::class, 'create'])->name('create');
+    Route::post('/store',  [QCController::class, 'store'])->name('store');
+});
+```
+
+• Semua route dilindungi middleware `auth` agar hanya pengguna yang sudah login (role QC) yang dapat mengakses.
+• Prefix `qc` dan penamaan route bertanda `qc.*` memudahkan pembuatan link di Blade (`route('qc.create')`).
+• Route Model Binding dapat ditambahkan pada endpoint detail (`/qc/{batch}`) jika diperlukan di fase selanjutnya.
+
+## File Structure (MVC Journey 2)
+
+Berikut lokasi dan tanggung jawab tiap file dalam arsitektur MVC untuk fitur QC Input:
+
+• `app/Http/Controllers/QCController.php`
+  — Controller utama fitur QC. Metode `index()` mengambil daftar batch (dengan eager loading `testData`), `create()` menyiapkan data batch aktif untuk dropdown form, dan `store()` mendelegasikan validasi ke Form Request lalu memanggil `TestData::create()`.
+
+• `app/Http/Requests/StoreTestDataRequest.php` *(opsional, direkomendasikan)*
+  — Form Request class untuk memisahkan logika validasi dari controller. Mendefinisikan rules seperti `required`, `numeric`, `exists:batches,id`, dan pesan error yang ramah pengguna. Gunakan `php artisan make:request StoreTestDataRequest` untuk membuatnya.
+
+• `app/Models/Batch.php`
+  — Model Eloquent untuk tabel `batches`. Mendefinisikan relasi `hasMany(TestData::class)` dan atribut `fillable` (`product_code`, `batch_number`, `production_date`, dll.). Tambahkan query scope `scopeActive()` untuk memfilter batch dengan status aktif.
+
+• `app/Models/TestData.php`
+  — Model Eloquent untuk tabel `test_data`. Mendefinisikan relasi `belongsTo(Batch::class)` dan atribut `fillable` (`batch_id`, `parameter_name`, `value`, `unit`, `tested_at`). Cast kolom `value` ke `float` dan `tested_at` ke `datetime` untuk kemudahan pemrosesan.
+
+• `resources/views/qc/create.blade.php`
+  — Template Blade untuk form input data pengujian. Menggunakan `@csrf` dan `method="POST"` yang mengarah ke `route('qc.store')`. Menampilkan dropdown pilihan batch (dari `$batches`), field input numerik per parameter, dan blok `@error` untuk menampilkan pesan validasi secara inline.
+
+• `routes/web.php`
+  — File pendaftaran semua route web aplikasi. Route Journey 2 dikelompokkan dalam `Route::group` dengan middleware `auth` dan prefix `qc` seperti dijelaskan pada section **Routes** di atas.

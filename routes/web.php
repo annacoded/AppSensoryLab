@@ -9,5 +9,7 @@ Route::get('/', function () {
 });
 
 // Route for QC Input Data
-Route::get('/qc/create', [QCController::class, 'create'])->name('qc.create');
-Route::post('/qc/store', [QCController::class, 'store'])->name('qc.store');
+Route::get('/qc',         [QCController::class, 'index'])->name('qc.index');
+Route::get('/qc/create',  [QCController::class, 'create'])->name('qc.create');
+Route::post('/qc/store',  [QCController::class, 'store'])->name('qc.store');
+
